@@ -1,0 +1,12 @@
+.nav-bar{
+    box-shadow:0 1px 3px -2px black
+    /* [horizontal offset] [vertical offset] [blur radius] [spread radius] [color]; */  
+}
+@media(min-width:1024px){
+    .nav-cent{
+        display: flex;
+    }
+}
+.rotate180{
+    transform: rotateX(180deg);
+}

@@ -1,0 +1,98 @@
+import React, { useContext } from "react";
+import { ShopContext } from "../../Context/ShopContext";
+import deleteicon from "../Assests/trash-bin.png"
+import { useParams } from "react-router-dom";
+export const Cartpage = () => {
+  const { allproduct, cartdata,addtocart, removefromcart } = useContext(ShopContext);
+  const {productId}=useParams()
+  function gettotalamount()
+  {
+    
+    let totalamount=0;
+    allproduct.map((item)=>{
+      if(cartdata[item.id]>0)
+        {
+          totalamount+=cartdata[item.id]*item.new_price;
+        
+        }
+    })
+    return totalamount;
+  }
+  return (
+    <div className="flex flex-col w-[100%]">
+      <div className="header  self-center pb-5 flex font-bold w-[80%] gap-2  pt-[100px]">
+        <div className="w-[20%] text-center">Product</div>
+        <div className="w-[30%] text-center">Title</div>
+        <div className="w-[15%] text-center">Price</div>
+        <div className="w-[15%] text-center">Quantity</div>
+        <div className="w-[20%] text-center">Total</div>
+       
+      </div>
+      <div className=" gap-2 font-bold flex flex-col ">
+        {
+          allproduct.map((item)=>{
+              if(cartdata[item.id]>0)
+              {
+                return ( 
+                  <div className="w-[100%] flex flex-col self-center">
+                  <hr className="border-2 w-[80%] mb-9 mt-5 self-center bg-black dark:bg-black"></hr>
+                  <div className="mb-3 flex gap-2 w-[80%] self-center items-center">
+                  <div className="w-[20%] flex justify-center self-center"><img className="w-[40%] self-center" src={item.image}></img></div>
+                  <p className="w-[30%]">{item.name}</p>
+                  <div className="w-[15%] text-center">${item.new_price}</div>
+                  <div className="w-[15%] flex  justify-around  ">
+                  <div className="w-[15%] flex justify-center">
+                  <div className="qunatity text-xl flex gap-3 border-[1px] self-center  border-black w-fit p-2 rounded-lg ">
+                <button
+                  onClick={() => {
+                    addtocart(item.id);
+                  }}
+                  className="rounded-full border-2  border-black w-9 h-9"
+                >
+                  +
+                </button>
+                <p className="flex flex-col justify-center">{cartdata[item.id]}</p>
+                <button
+                  onClick={() => {
+                    removefromcart(item.id);
+                  }}
+                  className="rounded-full border-2 border-black w-9 h-9"
+                >
+                  -
+                </button>
+              </div></div>
+              </div>
+                  <div className="w-[20%] text-center">${cartdata[item.id]*item.new_price}</div>
+                   </div>
+                  </div>
+                )
+              }
+          })
+        }
+      </div>
+      <hr className="border-4 w-[82%] self-center bg-black dark:bg-black"></hr>
+      <div className="w-[82%] self-center mt-9">
+      <h1 className="text-3xl font-bold">Cart totals</h1>
+      <div className="mt-8 flex lg:w-[50%] md:w-[75%] w-[90%] justify-between text-xl">
+        <p className="text-xl">Subtotals</p>
+        <p>${gettotalamount()}</p>
+      </div>
+      <div className="mt-2 flex lg:w-[50%] md:w-[75%] w-[90%] justify-between text-xl">
+        <p className="text-xl">Shipping charges</p>
+        <p>{gettotalamount()>499||gettotalamount()==0?"$0":"$50"}</p>
+      </div>
+      <hr className="border-4 lg:w-[50%] md:w-[75%] w-[90%] mt-5 self-center bg-black dark:bg-black"></hr>
+      <div className="mt-2 flex lg:w-[50%] md:w-[75%] w-[90%] justify-between text-xl">
+        <p className="text-xl">Total amount</p>
+        <p>${gettotalamount()>499||gettotalamount()==0?gettotalamount():gettotalamount()+50}</p>
+       
+      </div>
+      <hr className="border-4 lg:w-[50%] md:w-[75%] w-[90%] mt-5 self-center bg-black dark:bg-black"></hr>
+      <p className="mt-4 mb-2 text-xl text-red-400">{`Add Order for  $${(500-gettotalamount())>0?500-gettotalamount():0} to get  Free delivery`}</p>
+      </div>
+      <div className="w-[82%] self-center flex"> <button  className="ml-[self-start mt-5 text-lg border-1 active:bg-red-900 bg-red-700 p-3 px-5 text-slate-200 rounded-md">Procees to checkout</button></div>
+    
+    </div>
+  );
+};
+export default Cartpage;

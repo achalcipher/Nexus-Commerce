@@ -1,0 +1,1 @@
+egory===props.category)
