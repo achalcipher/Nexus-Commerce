@@ -272,16 +272,3 @@ npm test
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🙏 Acknowledgments
-
-- React team for the excellent framework
-- Kubernetes community for orchestration tools
-- Open source contributors
-
----
-
-**Built with ❤️ using Atomic Design and persistent state patterns**
