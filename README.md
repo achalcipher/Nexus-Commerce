@@ -181,14 +181,37 @@ User Action → React State Update → API Call → MongoDB Update
 
 The CI/CD pipeline automatically:
 1. Builds Docker images on push to `master`/`main`
-2. Pushes images to Docker Hub
-3. Updates Kubernetes deployments
+2. Pushes images to Docker Hub (when secrets are set)
+3. Updates Kubernetes deployments (when secrets are set)
 4. Performs rolling updates with zero downtime
 
-**Required Secrets**:
-- `DOCKER_USERNAME`: Docker Hub username
-- `DOCKER_PASSWORD`: Docker Hub password/token
-- `KUBECONFIG`: Base64-encoded kubeconfig file
+### Enable push and deploy (GitHub Actions secrets)
+
+To allow the workflow to **push images to Docker Hub** and **deploy to Kubernetes**, add these repository secrets:
+
+1. Open the repo on GitHub → **Settings** → **Secrets and variables** → **Actions**.
+2. Click **New repository secret** and add:
+
+| Secret name       | Description |
+|-------------------|-------------|
+| `DOCKER_USERNAME` | Your Docker Hub username (e.g. `achalcipher`). |
+| `DOCKER_PASSWORD` | Docker Hub password or [access token](https://hub.docker.com/settings/security) (preferred). |
+| `KUBECONFIG`      | Base64-encoded kubeconfig so the workflow can run `kubectl` against your cluster. |
+
+**Creating `KUBECONFIG` (base64):**
+
+- **Linux/macOS (bash):**  
+  `base64 -w0 ~/.kube/config` (or `base64 -i ~/.kube/config` on macOS)
+- **Windows (PowerShell):**  
+  `[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\.kube\config"))`
+
+Copy the **single-line** output and paste it as the value for the `KUBECONFIG` secret.
+
+**Behavior:**
+
+- **No secrets:** Workflow still runs and **builds** images (no login/push/deploy). Useful to verify Dockerfiles on every push.
+- **Only `DOCKER_USERNAME` + `DOCKER_PASSWORD`:** Images are built and **pushed** to Docker Hub; deploy job is skipped without `KUBECONFIG`.
+- **All three set:** Build, push, and **deploy** to the cluster configured in `KUBECONFIG`.
 
 ## 🔧 Configuration
 
