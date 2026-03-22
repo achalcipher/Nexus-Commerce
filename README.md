@@ -267,12 +267,6 @@ gitGraph
 4. Push: `git push origin feature/cool-thing`
 5. Open a Pull Request
 
----
 
-<div align="center">
-
-Made with ❤️ by [achalcipher](https://github.com/achalcipher)
-
-⭐ Star this repo if you found it useful!
 
 </div>
