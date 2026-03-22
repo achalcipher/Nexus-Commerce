@@ -248,24 +248,6 @@ mindmap
 
 ---
 
-## 🤝 Contributing
-
-```mermaid
-gitGraph
-   commit id: "Initial commit"
-   branch feature/your-feature
-   checkout feature/your-feature
-   commit id: "Add your changes"
-   commit id: "Write tests"
-   checkout main
-   merge feature/your-feature id: "PR merged 🎉"
-```
-
-1. Fork the repo
-2. Create your branch: `git checkout -b feature/cool-thing`
-3. Commit: `git commit -m "feat: add cool thing"`
-4. Push: `git push origin feature/cool-thing`
-5. Open a Pull Request
 
 
 
