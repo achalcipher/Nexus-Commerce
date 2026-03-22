@@ -1,297 +1,278 @@
-# Nexus-Commerce Engine
+<div align="center">
 
-A production-ready, cloud-native e-commerce platform built with modern web technologies and deployed using Kubernetes. This unified commerce engine combines a React-based frontend with a Node.js/Express backend, implementing Atomic Design principles and robust persistent state management.
+```
+███╗   ██╗███████╗██╗  ██╗██╗   ██╗███████╗
+████╗  ██║██╔════╝╚██╗██╔╝██║   ██║██╔════╝
+██╔██╗ ██║█████╗   ╚███╔╝ ██║   ██║███████╗
+██║╚██╗██║██╔══╝   ██╔██╗ ██║   ██║╚════██║
+██║ ╚████║███████╗██╔╝ ██╗╚██████╔╝███████║
+╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝
+         C O M M E R C E
+```
 
-## 🏗️ Architecture Overview
+### 🛍️ A full-stack e-commerce platform built for speed, style, and scale
 
-Nexus-Commerce follows a microservices architecture with clear separation between frontend and backend services, orchestrated through Kubernetes for scalable, resilient deployments.
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer-Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
 
-### Technology Stack
+</div>
 
-- **Frontend**: React 18, React Router, TailwindCSS, React Hot Toast
-- **Backend**: Node.js, Express.js, MongoDB, Mongoose
-- **Infrastructure**: Kubernetes, Docker, Nginx Ingress
-- **CI/CD**: GitHub Actions
-- **Payment**: Stripe Integration
+---
+
+## ⚡ What is NexusCart?
+
+NexusCart is a modern, animated full-stack e-commerce app. Browse products by category, manage your cart in real-time, and checkout — all with smooth animations and a clean UI.
+
+---
+
+## 🗺️ App Flow
+
+```mermaid
+flowchart TD
+    A([🌐 User Opens App]) --> B{Logged In?}
+    B -- No --> C[🔒 Login / Signup Page]
+    B -- Yes --> D[🏠 Home Page]
+    C --> E[📝 Create Account or Sign In]
+    E --> D
+
+    D --> F[🛍️ Browse Shop]
+    D --> G[👔 Men's Category]
+    D --> H[👗 Women's Category]
+    D --> I[🧒 Kids' Category]
+
+    F & G & H & I --> J[🔍 View Product Detail]
+    J --> K{Add to Cart?}
+    K -- Yes --> L[🛒 Cart Updated]
+    K -- No --> F
+
+    L --> M[📦 Cart Page]
+    M --> N{Checkout?}
+    N -- Yes --> O[✅ Order Confirmed]
+    N -- No --> F
+
+    style A fill:#ff4757,color:#fff,stroke:none
+    style O fill:#2ed573,color:#fff,stroke:none
+    style D fill:#5352ed,color:#fff,stroke:none
+    style C fill:#ffa502,color:#fff,stroke:none
+```
+
+---
+
+## 🏗️ System Architecture
+
+```mermaid
+flowchart LR
+    subgraph CLIENT["🖥️ Frontend — React 18"]
+        direction TB
+        N[Navbar] --> CTX
+        H[Hero] --> CTX
+        P[Popular] --> CTX
+        NC[New Collections] --> CTX
+        CART[Cart Page] --> CTX
+        CTX[🔄 ShopContext\nGlobal State]
+    end
+
+    subgraph SERVER["⚙️ Backend — Node / Express"]
+        direction TB
+        API[REST API\nlocalhost:4000]
+        MW[JWT Middleware\nAuth Guard]
+        API --> MW
+    end
+
+    subgraph DB["🗄️ Database — MongoDB Atlas"]
+        U[(Users\nCollection)]
+        PR[(Products\nCollection)]
+    end
+
+    CLIENT -- HTTP Fetch --> SERVER
+    SERVER -- Mongoose --> DB
+    CTX -- localStorage --> LS[🔑 auth-token]
+
+    style CLIENT fill:#1e1e2e,color:#cdd6f4,stroke:#89b4fa
+    style SERVER fill:#1e1e2e,color:#cdd6f4,stroke:#a6e3a1
+    style DB fill:#1e1e2e,color:#cdd6f4,stroke:#f38ba8
+```
+
+---
+
+## 🔐 Auth Flow
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant Frontend
+    participant Backend
+    participant MongoDB
+
+    User->>Frontend: Enter email + password
+    Frontend->>Backend: POST /signup or /login
+    Backend->>MongoDB: Find or create user
+    MongoDB-->>Backend: User document
+    Backend-->>Frontend: JWT token
+    Frontend->>Frontend: Save token to localStorage
+    Frontend-->>User: Redirect to Home 🎉
+
+    Note over Frontend,Backend: Every cart action sends auth-token header
+```
+
+---
+
+## 🛒 Cart State Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> Empty : App loads
+    Empty --> HasItems : addtocart()
+    HasItems --> HasItems : addtocart() / removefromcart()
+    HasItems --> Empty : All items removed
+    HasItems --> Checkout : Proceed to checkout
+    Checkout --> [*] : Order confirmed ✅
+
+    note right of HasItems
+        State synced with MongoDB
+        via POST /addtocart
+        and POST /removefromcart
+    end note
+```
+
+---
 
 ## 📁 Project Structure
 
 ```
 Nexus-Commerce/
-├── frontend/                 # React frontend application
+│
+├── 🎨 frontend/
 │   ├── src/
-│   │   ├── Components/      # Atomic Design components
-│   │   │   ├── Navbar/      # Navigation component
-│   │   │   ├── Hero/        # Hero section
-│   │   │   ├── Footer/      # Footer component
-│   │   │   ├── Cartpage/    # Cart management
-│   │   │   └── ...
-│   │   ├── Context/         # React Context for state management
-│   │   │   └── ShopContext.jsx
-│   │   └── Pages/           # Page-level components
-│   ├── public/              # Static assets
-│   └── Dockerfile           # Frontend containerization
-├── backend/                 # Node.js/Express API
-│   ├── index.js            # Main server file
-│   ├── upload/             # File uploads directory
-│   └── Dockerfile          # Backend containerization
-├── k8s/                    # Kubernetes manifests
-│   ├── frontend-deployment.yaml
-│   ├── backend-deployment.yaml
-│   └── ingress.yaml
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # CI/CD pipeline
-└── README.md
+│   │   ├── Components/
+│   │   │   ├── 🧭 Navbar/          ← Sticky animated navbar
+│   │   │   ├── 🦸 Hero/            ← Floating hero with blobs
+│   │   │   ├── 🔥 Popular/         ← Women's trending products
+│   │   │   ├── ✨ New collections/ ← Latest drops
+│   │   │   ├── 🎁 Offers/          ← Gradient promo banner
+│   │   │   ├── 📧 Newsletter/      ← Email subscribe
+│   │   │   ├── 🛒 Cartpage/        ← Animated cart UI
+│   │   │   ├── 📦 Productdisplay/  ← Product detail view
+│   │   │   └── 🏷️ Item/            ← Product card with hover
+│   │   ├── Context/
+│   │   │   └── ShopContext.jsx     ← Global state (cart + products)
+│   │   └── Pages/
+│   │       ├── Shop.jsx
+│   │       ├── ShopCategory.jsx
+│   │       ├── Product.jsx
+│   │       ├── Cart.jsx
+│   │       └── LoginSignup.jsx
+│   └── package.json
+│
+└── ⚙️ backend/
+    ├── index.js                    ← Express server + all routes
+    ├── upload/images/              ← Product image uploads
+    └── package.json
 ```
 
-## 🎨 Atomic Design Architecture
+---
 
-The frontend follows **Atomic Design** principles, organizing components into a hierarchical structure:
+## 🚀 Getting Started
 
-### Component Hierarchy
+```mermaid
+flowchart LR
+    A[📥 Clone Repo] --> B[📦 Install Backend\nnpm install]
+    B --> C[▶️ Start Backend\nnpm start\nlocalhost:4000]
+    C --> D[📦 Install Frontend\nnpm install]
+    D --> E[▶️ Start Frontend\nnpm start\nlocalhost:3000]
+    E --> F[🎉 Open Browser]
 
-1. **Atoms** (Basic building blocks)
-   - Buttons, Inputs, Icons, Images
-   - Located in shared component libraries
-
-2. **Molecules** (Simple component groups)
-   - Form fields with labels
-   - Navigation items
-   - Product cards
-
-3. **Organisms** (Complex UI components)
-   - `Navbar/` - Complete navigation bar
-   - `Hero/` - Hero section with CTA
-   - `Cartpage/` - Shopping cart interface
-   - `Productdisplay/` - Product detail view
-
-4. **Templates** (Page layouts)
-   - `Pages/Shop.jsx` - Product listing page
-   - `Pages/Cart.jsx` - Shopping cart page
-   - `Pages/Product.jsx` - Product detail page
-
-5. **Pages** (Fully rendered views)
-   - Complete user-facing pages with data
-
-### Component Organization
-
-Components are organized by feature/domain, promoting:
-- **Reusability**: Components can be composed across different pages
-- **Maintainability**: Clear separation of concerns
-- **Scalability**: Easy to add new features without affecting existing code
-- **Testability**: Isolated components are easier to test
-
-## 🔄 Persistent State Logic
-
-Nexus-Commerce implements a multi-layered state persistence strategy:
-
-### 1. React Context API (Application State)
-
-**ShopContext** (`frontend/src/Context/ShopContext.jsx`) provides global state management:
-
-```javascript
-- cartdata: Cart state synchronized with backend
-- allproduct: Product catalog cache
-- addtocart(): Add items with backend sync
-- removefromcart(): Remove items with backend sync
+    style A fill:#ff6b6b,color:#fff,stroke:none
+    style F fill:#51cf66,color:#fff,stroke:none
 ```
-
-**Features**:
-- Real-time cart synchronization with backend API
-- Optimistic UI updates for better UX
-- Automatic state hydration on app load
-- Token-based authentication state
-
-### 2. localStorage (Client-Side Persistence)
-
-**Authentication Tokens**:
-- `auth-token`: JWT token stored for session persistence
-- Survives page refreshes and browser restarts
-- Automatically included in API requests
-
-**State Hydration Flow**:
-1. App loads → Check `localStorage` for `auth-token`
-2. If token exists → Fetch user cart data from backend
-3. Populate `ShopContext` with persisted cart state
-4. User continues from last session state
-
-### 3. MongoDB StatefulSet (Database Persistence)
-
-**Kubernetes StatefulSet** ensures database persistence:
-- Persistent Volume Claims (PVC) for data storage
-- StatefulSet maintains pod identity across restarts
-- Data survives pod crashes and deployments
-- Automatic volume reattachment on pod recreation
-
-**Data Models**:
-- **User**: Email, name, password, `cartData` (persistent cart)
-- **Product**: ID, name, image, category, pricing, availability
-
-### 4. State Synchronization Strategy
-
-```
-User Action → React State Update → API Call → MongoDB Update
-     ↓              ↓                    ↓           ↓
-  Optimistic    Context Update      Backend      Database
-   UI Update    (Immediate)         Validation   Persistence
-```
-
-**Benefits**:
-- **Immediate Feedback**: UI updates instantly
-- **Data Consistency**: Backend validates and persists
-- **Offline Resilience**: localStorage provides fallback
-- **Crash Recovery**: MongoDB ensures data durability
-
-## 🚀 Deployment
-
-### Prerequisites
-
-- Docker & Docker Compose
-- Kubernetes cluster (minikube, GKE, EKS, or AKS)
-- kubectl configured
-- Nginx Ingress Controller installed
-
-### Local Development
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/achalcipher/Nexus-Commerce.git
-   cd Nexus-Commerce
-   ```
-
-2. **Build Docker images**:
-   ```bash
-   docker build -t nexus-commerce-frontend:latest ./frontend
-   docker build -t nexus-commerce-backend:latest ./backend
-   ```
-
-3. **Deploy to Kubernetes**:
-   ```bash
-   kubectl apply -f k8s/frontend-deployment.yaml
-   kubectl apply -f k8s/backend-deployment.yaml
-   kubectl apply -f k8s/ingress.yaml
-   ```
-
-4. **Access the application**:
-   - Frontend: `http://storefront.nexus-commerce.com`
-   - Backend API: `http://api.nexus-commerce.com`
-
-### Production Deployment
-
-The CI/CD pipeline automatically:
-1. Builds Docker images on push to `master`/`main`
-2. Pushes images to Docker Hub (when secrets are set)
-3. Updates Kubernetes deployments (when secrets are set)
-4. Performs rolling updates with zero downtime
-
-### Enable push and deploy (GitHub Actions secrets)
-
-To allow the workflow to **push images to Docker Hub** and **deploy to Kubernetes**, add these repository secrets:
-
-1. Open the repo on GitHub → **Settings** → **Secrets and variables** → **Actions**.
-2. Click **New repository secret** and add:
-
-| Secret name       | Description |
-|-------------------|-------------|
-| `DOCKER_USERNAME` | Your Docker Hub username (e.g. `achalcipher`). |
-| `DOCKER_PASSWORD` | Docker Hub password or [access token](https://hub.docker.com/settings/security) (preferred). |
-| `KUBECONFIG`      | Base64-encoded kubeconfig so the workflow can run `kubectl` against your cluster. |
-
-**Creating `KUBECONFIG` (base64):**
-
-- **Linux/macOS (bash):**  
-  `base64 -w0 ~/.kube/config` (or `base64 -i ~/.kube/config` on macOS)
-- **Windows (PowerShell):**  
-  `[Convert]::ToBase64String([IO.File]::ReadAllBytes("$env:USERPROFILE\.kube\config"))`
-
-Copy the **single-line** output and paste it as the value for the `KUBECONFIG` secret.
-
-**Behavior:**
-
-- **No secrets:** Workflow still runs and **builds** images (no login/push/deploy). Useful to verify Dockerfiles on every push.
-- **Only `DOCKER_USERNAME` + `DOCKER_PASSWORD`:** Images are built and **pushed** to Docker Hub; deploy job is skipped without `KUBECONFIG`.
-- **All three set:** Build, push, and **deploy** to the cluster configured in `KUBECONFIG`.
-
-## 🔧 Configuration
-
-### Environment Variables
-
-**Frontend** (`k8s/frontend-deployment.yaml`):
-- `REACT_APP_API_URL`: Backend API endpoint
-
-**Backend** (`k8s/backend-deployment.yaml`):
-- `NODE_ENV`: Environment (production/development)
-- `PORT`: Server port (default: 5000)
-- `MONGODB_URI`: MongoDB connection string
-- `JWT_SECRET`: JWT signing secret
-- `STRIPE_SECRET_KEY`: Stripe API secret key
-
-### Kubernetes Resources
-
-- **Frontend**: 3 replicas with LoadBalancer service
-- **Backend**: 2 replicas with ClusterIP service
-- **Ingress**: Nginx-based routing with TLS termination
-
-## 📊 Monitoring & Health Checks
-
-### Health Endpoints
-
-- **Frontend**: `GET /` (readiness & liveness)
-- **Backend**: `GET /api/health` (readiness & liveness)
-
-### Resource Limits
-
-**Frontend**:
-- Requests: 100m CPU, 128Mi memory
-- Limits: 500m CPU, 256Mi memory
-
-**Backend**:
-- Requests: 200m CPU, 256Mi memory
-- Limits: 1000m CPU, 512Mi memory
-
-## 🔐 Security
-
-- JWT-based authentication
-- HTTPS/TLS via Ingress
-- Environment-based secret management
-- CORS configuration for API security
-- Input validation and sanitization
-
-## 🧪 Testing
 
 ```bash
-# Frontend tests
-cd frontend
-npm test
+# 1. Clone
+git clone https://github.com/achalcipher/Nexus-Commerce.git
 
-# Backend API tests
-cd backend
-npm test
+# 2. Backend
+cd Nexus-Commerce/backend
+npm install
+npm start          # → running on :4000
+
+# 3. Frontend (new terminal)
+cd Nexus-Commerce/frontend
+npm install
+npm start          # → opens on :3000
 ```
 
-## 📝 Development Guidelines
+---
 
-### Atomic Design Best Practices
+## 🔌 API Reference
 
-1. **Start Small**: Build atoms before molecules
-2. **Compose Up**: Combine smaller components into larger ones
-3. **Single Responsibility**: Each component has one clear purpose
-4. **Prop Types**: Define clear interfaces for components
-5. **Reusability**: Design components for multiple use cases
+```mermaid
+mindmap
+  root((🔌 API\nlocalhost:4000))
+    Products
+      GET /allproducts
+      GET /newcollections
+      GET /popularwom
+      POST /addproduct
+      POST /removeproduct
+    Auth
+      POST /signup
+      POST /login
+    Cart 🔒
+      POST /addtocart
+      POST /removefromcart
+      POST /getcartdata
+    Media
+      POST /upload
+      GET /images/:filename
+```
 
-### State Management Guidelines
+> 🔒 Cart routes require `auth-token` header (JWT)
 
-1. **Context for Global State**: Use React Context for app-wide state
-2. **localStorage for Persistence**: Store tokens and user preferences
-3. **Backend as Source of Truth**: Always sync critical data with backend
-4. **Optimistic Updates**: Update UI immediately, sync in background
+---
+
+## 🎨 Tech Stack at a Glance
+
+| Layer | Tech | Purpose |
+|-------|------|---------|
+| 🖼️ UI | React 18 + Tailwind | Component-based UI |
+| 🎬 Animations | Framer Motion | Page & hover animations |
+| 🔀 Routing | React Router v6 | Client-side navigation |
+| 🔔 Toasts | React Hot Toast | User feedback |
+| ⚙️ Server | Express.js | REST API |
+| 🔐 Auth | JWT | Stateless authentication |
+| 🗄️ Database | MongoDB Atlas | Cloud NoSQL storage |
+| 📁 Uploads | Multer | Product image handling |
+
+---
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
+```mermaid
+gitGraph
+   commit id: "Initial commit"
+   branch feature/your-feature
+   checkout feature/your-feature
+   commit id: "Add your changes"
+   commit id: "Write tests"
+   checkout main
+   merge feature/your-feature id: "PR merged 🎉"
+```
+
+1. Fork the repo
+2. Create your branch: `git checkout -b feature/cool-thing`
+3. Commit: `git commit -m "feat: add cool thing"`
+4. Push: `git push origin feature/cool-thing`
 5. Open a Pull Request
 
+---
+
+<div align="center">
+
+Made with ❤️ by [achalcipher](https://github.com/achalcipher)
+
+⭐ Star this repo if you found it useful!
+
+</div>
