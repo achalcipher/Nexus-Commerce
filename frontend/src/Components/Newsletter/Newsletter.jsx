@@ -1,17 +1,45 @@
-import React from 'react'
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export const Newsletter = () => {
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = () => {
+    if (!email || !email.includes("@")) { toast.error("Enter a valid email"); return; }
+    toast.success("Subscribed successfully!");
+    setEmail("");
+  };
+
   return (
-    <div className='lg:w-[65%] md:w-[75%] w-[90%] h-[40vh] flex flex-col py-[140px] mb-[150px] mt-[100px]  bg-gradient-to-b from-[#fde1ff] to-[#e1ffea22] to-[60%] self-center'>
-      <div className='flex flex-col self-center'>
-        <h1 className='text-[#454545] lg:text-[40px]  md:text-[35px] text-[20px] text-center  font-[600]'>Get exclusive offers on your mail</h1>
-        <p className='text-[#454545] lg:text-[20px]   md:text-[20px]  text-[15px] text-center'>Subscribe to our newsletter and stay updated</p>
+    <section className="py-20 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+        className="max-w-2xl mx-auto text-center"
+      >
+        <span className="text-purple-500 font-semibold text-sm uppercase tracking-widest">Stay in the loop</span>
+        <h2 className="text-4xl font-black text-gray-900 mt-2 mb-3">Get Exclusive Offers on Your Mail</h2>
+        <p className="text-gray-500 mb-8">Subscribe to our newsletter and never miss a deal.</p>
+
+        <div className="flex flex-col sm:flex-row gap-3 bg-white border-2 border-gray-200 rounded-full p-2 shadow-lg max-w-lg mx-auto">
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email address"
+            className="flex-1 px-4 py-2 outline-none text-gray-700 bg-transparent rounded-full"
+          />
+          <motion.button
+            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            onClick={handleSubscribe}
+            className="px-6 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold rounded-full hover:shadow-lg transition-all duration-200"
+          >
+            Subscribe
+          </motion.button>
         </div>
-        <div className='flex bg-white lg:w-[630px] mt-[25px] lg:h-[70px] md:w-[500px] md:h-[50px] w-[270px] h-[30px] rounded-[80px] border-[1px] border-[#e3e3e3] self-center'>
-            <input className='w-[500px] ml-[30px]  outline-none text-[#616161] md:text-[12px] text-[12px] lg:text-[16px]' type='email' placeholder='Enter your mail'></input>
-            <button  className='lg:w-[210px] md:w-[180px] w-[100px] active:bg-pink-400 lg:h-[70px] md:h-[40px] h-[25px] rounded-[180px] bg-black text-white  md:text-[12px] text-[12px] lg:text-[16px] p-2 border-none  outline-none'>Subscribe</button>
-        </div>
-    </div>
-  )
-}
-export default Newsletter
+      </motion.div>
+    </section>
+  );
+};
+
+export default Newsletter;

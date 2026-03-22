@@ -1,5 +1,0 @@
-node_modules
-.git
-*.md
-.env*
-npm-debug.log*

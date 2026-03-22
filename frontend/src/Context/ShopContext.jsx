@@ -8,13 +8,13 @@ const ShopContextprovider = (props) => {
   const [cartdata, setcartdata] = useState(getcartitems());
   const [allproduct, setallproduct] = useState([]);
   useEffect(() => {
-    fetch("https://ecom-back-yale.onrender.com/allproducts")
+    fetch("http://localhost:4000/allproducts")
       .then((res) => res.json())
       .then((data) => setallproduct(data));
 
       if(localStorage.getItem("auth-token"))
       {
-         fetch("https://ecom-back-yale.onrender.com/getcartdata", {
+         fetch("http://localhost:4000/getcartdata", {
           method: "POST",
           headers: {
             Accept: "application/form-data",
@@ -36,7 +36,7 @@ const ShopContextprovider = (props) => {
   function addtocart(itemid) {
     if (localStorage.getItem("auth-token")) {
       setcartdata((prev) => ({ ...prev, [itemid]: prev[itemid] + 1 }));
-      fetch("https://ecom-back-yale.onrender.com/addtocart", {
+      fetch("http://localhost:4000/addtocart", {
         method: "POST",
         headers: {
           Accept: "application/form-data",
@@ -54,7 +54,7 @@ const ShopContextprovider = (props) => {
   function removefromcart(itemid) {
     if (localStorage.getItem("auth-token")) {
       setcartdata((prev) => ({ ...prev, [itemid]: prev[itemid] - 1 }));
-      fetch("https://ecom-back-yale.onrender.com/removefromcart", {
+      fetch("http://localhost:4000/removefromcart", {
         method: "POST",
         headers: {
           Accept: "application/form-data",

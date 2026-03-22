@@ -1,134 +1,131 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import logo from "../Assests/logo.png";
 import cart_icon from "../Assests/cart_icon.png";
-import "./Navbar.css";
 import { useNavigate } from "react-router-dom";
 import { ShopContext } from "../../Context/ShopContext";
-import dropdownicon from "../Assests/dropdown_icon.png"
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Navbar = () => {
   const [menu, setmenu] = useState("shop");
-  const navigate=useNavigate();
-  const [vis,setvis]=useState("hidden");
-  let {cartdata,allproduct}=useContext(ShopContext)
-  function cartdatatotal()
-  {
-    let count=0;
-      allproduct.map((item)=>{
-        if(cartdata[item.id]>0)
-          count+=cartdata[item.id];
-      })
-      return count;
+  const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  let { cartdata, allproduct } = useContext(ShopContext);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  function cartdatatotal() {
+    let count = 0;
+    allproduct.map((item) => { if (cartdata[item.id] > 0) count += cartdata[item.id]; });
+    return count;
   }
-  function showit(event)
-  {
-    if(vis=="visible")
-    {
-      setvis("hidden")
-      
-    }
-    
-    else
-    {
-      setvis("visible")
-    }
-    let ico=  document.getElementsByClassName("imgicon")
-    ico[0].classList.toggle("rotate180")
-  }
+
+  const navLinks = [
+    { label: "Shop", key: "shop", path: "/" },
+    { label: "Men", key: "mens", path: "/mens" },
+    { label: "Women", key: "womens", path: "/womens" },
+    { label: "Kids", key: "kids", path: "/kids" },
+  ];
+
   return (
-    <div className="nav-bar flex justify-around p-[16px]">
-      <div onClick={()=>{navigate(`/${menu}`)}} className="cursor-pointer nav-left flex align-center flex-col lg:flex-row md:flex-row  gap-[10px]">
-        <img src={logo} className="lg:w-fit lg:h-fit md:w-8 md:h-8 w-12 h-12 flex "></img>
-        <div className="lg:text-[38px] md:text-[25px] text-[13px] font-semibold">OpenCart</div>
+    <motion.nav
+      initial={{ y: -80, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${scrolled ? "bg-white/90 backdrop-blur-md shadow-lg" : "bg-white"}`}
+    >
+      <div className="flex items-center justify-between px-6 lg:px-16 py-3">
+        {/* Logo */}
+        <div onClick={() => navigate("/")} className="flex items-center gap-2 cursor-pointer group">
+          <img src={logo} className="w-10 h-10 group-hover:rotate-12 transition-transform duration-300" alt="logo" />
+          <span className="text-2xl font-bold bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent">
+            NexusCart
+          </span>
+        </div>
+
+        {/* Desktop Nav */}
+        <div className="hidden lg:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <button
+              key={link.key}
+              onClick={() => { setmenu(link.key); navigate(link.path); }}
+              className="relative text-[17px] font-medium text-gray-700 hover:text-red-500 transition-colors duration-200 group"
+            >
+              {link.label}
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-red-500 transition-all duration-300 ${menu === link.key ? "w-full" : "w-0 group-hover:w-full"}`} />
+            </button>
+          ))}
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center gap-4">
+          {localStorage.getItem("auth-token") ? (
+            <button
+              onClick={() => { localStorage.removeItem("auth-token"); window.location.replace("/"); }}
+              className="hidden lg:block px-5 py-2 rounded-full border-2 border-red-400 text-red-500 font-medium hover:bg-red-500 hover:text-white transition-all duration-200"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="hidden lg:block px-5 py-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              Login
+            </button>
+          )}
+
+          {/* Cart */}
+          <div className="relative cursor-pointer" onClick={() => navigate("/cart")}>
+            <motion.img whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }} src={cart_icon} className="w-8 h-8" alt="cart" />
+            {cartdatatotal() > 0 && (
+              <motion.span
+                initial={{ scale: 0 }} animate={{ scale: 1 }}
+                className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold"
+              >
+                {cartdatatotal()}
+              </motion.span>
+            )}
+          </div>
+
+          {/* Mobile hamburger */}
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden flex flex-col gap-1.5 p-1">
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${mobileOpen ? "opacity-0" : ""}`} />
+            <span className={`block w-6 h-0.5 bg-gray-700 transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          </button>
+        </div>
       </div>
-      {/*  */}          
-      <div className="flex flex-col items-center">
-      <div onClick={showit} className="rounded-full cursor-pointer border-2 pointer border-black p-2 w-fit flex flex-col mb-4 lg:hidden">
-        <img  src={dropdownicon} className={`w-3 h-3 imgicon }`}></img>
-      </div>
-      <div 
-       className={`nav-cent flex flex-col lg:flex-row md:flex-row align-center lg:gap-[50px] md:gap-[50px] ${vis}`}>
-        <div
-          onClick={() => {
-            setmenu("shop")
-            navigate("/");
-          }}
-          className="flex text-[20px] text-center font-[500px] flex-col justify-around "
-        >
-          <div
-            className={`h-fit ${
-              menu === `shop` ? "border-b-red-500  border-b-2" : "hover:scale-[1.25]"
-            } p-2 cursor-pointer`}
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+            className="lg:hidden overflow-hidden bg-white border-t border-gray-100 px-6 pb-4"
           >
-            Shop
-          </div>
-        </div>
-        <div
-          onClick={() => {
-            setmenu("mens")
-            navigate("/mens");
-          }}
-          className="flex text-[20px] font-[500px]  text-center flex-col justify-around"
-        >
-          <div
-            className={`h-fit ${
-              menu === `mens` ? "border-b-red-500  border-b-2" : "hover:scale-[1.25]"
-            } p-2 cursor-pointer`}
-          >
-            Men
-          </div>
-        </div>
-        <div
-          onClick={() => {
-            setmenu("womens");
-            navigate("/womens");
-          }}
-          className="flex text-[20px] font-[500px]  text-center flex-col justify-around"
-        >
-          <div
-            className={`h-fit ${
-              menu === `womens` ? "border-b-red-500  border-b-2" : "hover:scale-[1.25]"
-            } p-2 cursor-pointer`}
-          >
-            Women
-          </div>
-        </div>
-        <div
-          onClick={() => {
-            setmenu("kids")
-            navigate("/kids");;
-          }}
-          className="flex text-[20px] font-[500px]  text-center flex-col justify-around"
-        >
-          <div className={`h-fit ${menu ===`kids`? 'border-b-red-500  border-b-2':'hover:scale-[1.25]' } p-2 cursor-pointer`}>
-            Kids
-          </div>
-        </div>
-      </div>
-      </div>
-      {/* <div className="nav-right flex justify-between w-fit"> */}
-        <div className="flex flex-col lg:justify-center">
-          {localStorage.getItem('auth-token')?<button onClick={()=>{localStorage.removeItem('auth-token');window.location.replace("/")}}
-           className="lg:w-[135px] lg:h-[50px] p-2 border-[1px] border-[#7a7a7a] cursor-pointer bg-white rounded-[75px] text-[20px] font-[500] active:bg-[#f3f3f3]">
-            Logout
-          </button>:
-          <button onClick={()=>{navigate("/login")}}
-           className="lg:w-[135px] lg:h-[50px] p-2 border-[1px] border-[#7a7a7a] cursor-pointer bg-white rounded-[75px] text-[20px] font-[500] active:bg-[#f3f3f3]">
-            Login
-          </button>}
-        </div>
-        <div className="flex flex-col lg:justify-center relative text-center ">
-          <div className="nav-cart-count bg-red-700 text-white min-w-[22px] p-[1px]  min-h-[22px] aspect:square rounded-full top-[-15px] lg:top-[0px] right-[-10px] text-xl absolute">
-          {cartdatatotal()}
-          </div>
-         
-          <img 
-          onClick={()=>{navigate('/cart')}}
-            src={cart_icon}
-            className="w-[35px] cursor-pointer h-[35px]"
-          ></img>
-        {/* </div> */}
-      </div>
-    </div>
+            {navLinks.map((link) => (
+              <button key={link.key} onClick={() => { setmenu(link.key); navigate(link.path); setMobileOpen(false); }}
+                className={`block w-full text-left py-3 text-lg font-medium border-b border-gray-100 ${menu === link.key ? "text-red-500" : "text-gray-700"}`}>
+                {link.label}
+              </button>
+            ))}
+            {localStorage.getItem("auth-token") ? (
+              <button onClick={() => { localStorage.removeItem("auth-token"); window.location.replace("/"); }}
+                className="mt-3 w-full py-2 rounded-full border-2 border-red-400 text-red-500 font-medium">Logout</button>
+            ) : (
+              <button onClick={() => { navigate("/login"); setMobileOpen(false); }}
+                className="mt-3 w-full py-2 rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-medium">Login</button>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 };
+
+export default Navbar;
