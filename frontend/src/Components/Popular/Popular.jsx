@@ -1,14 +1,14 @@
-import BACKEND_URL from '../../config';
 import React, { useEffect, useState } from "react";
 import { Items } from "../Item/Items";
 import { motion } from "framer-motion";
+import BACKEND_URL from "../../config";
 
 const Popular = () => {
   const [data_product, setpopwom] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("${BACKEND_URL}/popularwom")
+    fetch(`${BACKEND_URL}/popularwom`)
       .then((res) => res.json())
       .then((data) => { setpopwom(data); setLoading(false); });
   }, []);

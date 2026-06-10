@@ -1,14 +1,14 @@
-import BACKEND_URL from '../../config';
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Items } from "../Item/Items";
 import { motion } from "framer-motion";
+import BACKEND_URL from "../../config";
 
 const Newcollections = () => {
   const [New_collections, setNew_collections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("${BACKEND_URL}/newcollections")
+    fetch(`${BACKEND_URL}/newcollections`)
       .then((res) => res.json())
       .then((data) => { setNew_collections(data); setLoading(false); });
   }, []);

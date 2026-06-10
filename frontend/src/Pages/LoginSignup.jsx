@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import BACKEND_URL from "../config";
@@ -7,13 +6,12 @@ import BACKEND_URL from "../config";
 const LoginSignup = () => {
   const [logtype, setlogtype] = useState("Signup");
   const [isBackendReady, setIsBackendReady] = useState(false);
-  const navigate = useNavigate();
   const [formdet, setformdet] = useState({ username: "", email: "", password: "" });
 
   useEffect(() => {
     const check = async () => {
       try {
-        const r = await fetch("${BACKEND_URL}/allproducts");
+        const r = await fetch(`${BACKEND_URL}/allproducts`);
         if (r.ok) setIsBackendReady(true);
       } catch {}
     };
@@ -22,8 +20,9 @@ const LoginSignup = () => {
 
   async function login() {
     let data;
-    await fetch("${BACKEND_URL}/login", {
-      method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" },
+    await fetch(`${BACKEND_URL}/login`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formdet),
     }).then((r) => r.json()).then((d) => { data = d; });
     if (data.success) { localStorage.setItem("auth-token", data.token); window.location.replace("/"); }
@@ -32,8 +31,9 @@ const LoginSignup = () => {
 
   async function signup() {
     let data;
-    await fetch("${BACKEND_URL}/signup", {
-      method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" },
+    await fetch(`${BACKEND_URL}/signup`, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formdet),
     }).then((r) => r.json()).then((d) => { data = d; });
     if (data.success) { localStorage.setItem("auth-token", data.token); window.location.replace("/"); }
@@ -58,16 +58,13 @@ const LoginSignup = () => {
         initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
       >
-        {/* Top gradient bar */}
         <div className="h-2 bg-gradient-to-r from-red-500 to-pink-500" />
-
         <div className="p-8 flex flex-col gap-5">
           <div className="text-center">
             <h1 className="text-3xl font-black text-gray-900">{logtype === "Login" ? "Welcome Back" : "Create Account"}</h1>
             <p className="text-gray-500 mt-1">{logtype === "Login" ? "Sign in to continue shopping" : "Join NexusCart today"}</p>
           </div>
 
-          {/* Toggle */}
           <div className="flex bg-gray-100 rounded-full p-1">
             {["Signup", "Login"].map((t) => (
               <button key={t} onClick={() => setlogtype(t)}
@@ -92,7 +89,7 @@ const LoginSignup = () => {
           <motion.button
             whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => logtype === "Login" ? login() : signup()}
-            className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-xl text-lg shadow-lg hover:shadow-red-200 transition-all duration-200"
+            className="w-full py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold rounded-xl text-lg shadow-lg transition-all duration-200"
           >
             {logtype === "Login" ? "Sign In" : "Create Account"}
           </motion.button>
