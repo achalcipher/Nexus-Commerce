@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import toast, { Toaster } from 'react-hot-toast';
+import BACKEND_URL from "../config";
 
 export const ShopContext = createContext(null);
 //context can return the value to the children and create function to return the context
@@ -8,13 +9,13 @@ const ShopContextprovider = (props) => {
   const [cartdata, setcartdata] = useState(getcartitems());
   const [allproduct, setallproduct] = useState([]);
   useEffect(() => {
-    fetch("http://localhost:4000/allproducts")
+    fetch("${BACKEND_URL}/allproducts")
       .then((res) => res.json())
       .then((data) => setallproduct(data));
 
       if(localStorage.getItem("auth-token"))
       {
-         fetch("http://localhost:4000/getcartdata", {
+         fetch("${BACKEND_URL}/getcartdata", {
           method: "POST",
           headers: {
             Accept: "application/form-data",
@@ -36,7 +37,7 @@ const ShopContextprovider = (props) => {
   function addtocart(itemid) {
     if (localStorage.getItem("auth-token")) {
       setcartdata((prev) => ({ ...prev, [itemid]: prev[itemid] + 1 }));
-      fetch("http://localhost:4000/addtocart", {
+      fetch("${BACKEND_URL}/addtocart", {
         method: "POST",
         headers: {
           Accept: "application/form-data",
@@ -54,7 +55,7 @@ const ShopContextprovider = (props) => {
   function removefromcart(itemid) {
     if (localStorage.getItem("auth-token")) {
       setcartdata((prev) => ({ ...prev, [itemid]: prev[itemid] - 1 }));
-      fetch("http://localhost:4000/removefromcart", {
+      fetch("${BACKEND_URL}/removefromcart", {
         method: "POST",
         headers: {
           Accept: "application/form-data",

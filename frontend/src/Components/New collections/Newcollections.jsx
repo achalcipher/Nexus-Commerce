@@ -1,3 +1,4 @@
+import BACKEND_URL from '../../config';
 import React, { useEffect, useState } from "react";
 import { Items } from "../Item/Items";
 import { motion } from "framer-motion";
@@ -7,7 +8,7 @@ const Newcollections = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:4000/newcollections")
+    fetch("${BACKEND_URL}/newcollections")
       .then((res) => res.json())
       .then((data) => { setNew_collections(data); setLoading(false); });
   }, []);

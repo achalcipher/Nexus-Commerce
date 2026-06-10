@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
+import BACKEND_URL from "../config";
 
 const LoginSignup = () => {
   const [logtype, setlogtype] = useState("Signup");
@@ -12,7 +13,7 @@ const LoginSignup = () => {
   useEffect(() => {
     const check = async () => {
       try {
-        const r = await fetch("http://localhost:4000/allproducts");
+        const r = await fetch("${BACKEND_URL}/allproducts");
         if (r.ok) setIsBackendReady(true);
       } catch {}
     };
@@ -21,7 +22,7 @@ const LoginSignup = () => {
 
   async function login() {
     let data;
-    await fetch("http://localhost:4000/login", {
+    await fetch("${BACKEND_URL}/login", {
       method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formdet),
     }).then((r) => r.json()).then((d) => { data = d; });
@@ -31,7 +32,7 @@ const LoginSignup = () => {
 
   async function signup() {
     let data;
-    await fetch("http://localhost:4000/signup", {
+    await fetch("${BACKEND_URL}/signup", {
       method: "POST", headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(formdet),
     }).then((r) => r.json()).then((d) => { data = d; });
